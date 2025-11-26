@@ -4,6 +4,12 @@ import { Input } from "@/components/ui/input";
 import { Mic, Send, Camera } from "lucide-react";
 import { MessageBubble } from "./MessageBubble";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface Message {
   id: string;
@@ -71,6 +77,12 @@ export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto }:
 
   const handleSend = () => {
     if (!input.trim()) return;
+
+    // Stop recording if active
+    if (isListening) {
+      recognitionRef.current?.stop();
+      setIsListening(false);
+    }
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -142,43 +154,51 @@ export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto }:
             className="hidden"
           />
           
-          <div className="flex gap-3 items-center">
-            <Button
-              size="icon"
-              variant="outline"
-              onClick={handlePhotoClick}
-              className="shrink-0 h-12 w-12"
-              title="Upload photo for try-on"
-            >
-              <Camera className="h-5 w-5" />
-            </Button>
-            <Button
-              size="icon"
-              variant={isListening ? "default" : "outline"}
-              onClick={toggleVoiceInput}
-              className={`shrink-0 h-12 w-12 ${isListening ? 'bg-secondary animate-pulse' : ''}`}
-              title="Voice input"
-            >
-              <Mic className="h-5 w-5" />
-            </Button>
-            <div className="flex-1 relative">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                placeholder="Tell me what you're looking for..."
-                className="h-12 text-base pr-12 bg-background/50 border-2 focus:border-primary transition-colors"
-              />
-              <Button 
-                onClick={handleSend} 
-                size="icon" 
-                className="absolute right-1 top-1 h-10 w-10"
-                disabled={!input.trim()}
+          <TooltipProvider>
+            <div className="flex gap-3 items-center">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="icon"
+                    variant="outline"
+                    onClick={handlePhotoClick}
+                    className="shrink-0 h-12 w-12"
+                  >
+                    <Camera className="h-5 w-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-[200px]">
+                  <p>Upload a photo of yourself to see how items would look on you!</p>
+                </TooltipContent>
+              </Tooltip>
+              <Button
+                size="icon"
+                variant={isListening ? "default" : "outline"}
+                onClick={toggleVoiceInput}
+                className={`shrink-0 h-12 w-12 ${isListening ? 'bg-secondary animate-pulse' : ''}`}
+                title="Voice input"
               >
-                <Send className="h-4 w-4" />
+                <Mic className="h-5 w-5" />
               </Button>
+              <div className="flex-1 relative">
+                <Input
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                  placeholder="Tell me what you're looking for..."
+                  className="h-12 text-base pr-12 bg-background/50 border-2 focus:border-primary transition-colors"
+                />
+                <Button 
+                  onClick={handleSend} 
+                  size="icon" 
+                  className="absolute right-1 top-1 h-10 w-10"
+                  disabled={!input.trim()}
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
-          </div>
+          </TooltipProvider>
           
           {uploadedPhoto && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground bg-secondary/20 px-3 py-2 rounded-lg">
