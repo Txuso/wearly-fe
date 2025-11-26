@@ -23,15 +23,15 @@ export const MessageBubble = ({ message }: MessageBubbleProps) => {
     >
       <div
         className={cn(
-          "max-w-[80%] rounded-2xl px-4 py-3 shadow-soft",
+          "max-w-[80%] rounded-xl px-3.5 py-2.5 shadow-card border",
           isUser
-            ? "bg-primary text-primary-foreground"
-            : "bg-card text-card-foreground border border-border"
+            ? "bg-gradient-hero text-primary-foreground border-primary/20"
+            : "bg-card/80 text-card-foreground border-border/60 backdrop-blur-sm"
         )}
       >
-        <p className="text-sm leading-relaxed">{message.content}</p>
+        <p className="text-xs font-medium leading-relaxed">{message.content}</p>
         <p className={cn(
-          "text-xs mt-1",
+          "text-[10px] mt-1 font-medium",
           isUser ? "text-primary-foreground/70" : "text-muted-foreground"
         )}>
           {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

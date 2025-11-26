@@ -134,9 +134,9 @@ export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto }:
   };
 
   return (
-    <div className="flex flex-col bg-card rounded-xl shadow-medium overflow-hidden">
+    <div className="flex flex-col bg-card rounded-2xl shadow-card overflow-hidden border border-border/60">
       {messages.length > 1 && (
-        <div className="max-h-48 overflow-y-auto p-4 space-y-3 border-b border-border">
+        <div className="max-h-48 overflow-y-auto p-4 space-y-3 border-b border-border/60 bg-gradient-subtle">
           {messages.map((message) => (
             <MessageBubble key={message.id} message={message} />
           ))}
@@ -144,7 +144,7 @@ export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto }:
         </div>
       )}
 
-      <div className="p-6">
+      <div className="p-5">
         <div className="flex flex-col gap-4">
           <input
             type="file"
@@ -162,20 +162,20 @@ export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto }:
                     size="icon"
                     variant="outline"
                     onClick={handlePhotoClick}
-                    className="shrink-0 h-12 w-12"
+                    className="shrink-0 h-11 w-11 rounded-xl border-border/60"
                   >
                     <Camera className="h-5 w-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-[200px]">
-                  <p>Upload a photo of yourself to see how items would look on you!</p>
+                  <p className="text-xs">Upload a photo of yourself to see how items would look on you!</p>
                 </TooltipContent>
               </Tooltip>
               <Button
                 size="icon"
                 variant={isListening ? "default" : "outline"}
                 onClick={toggleVoiceInput}
-                className={`shrink-0 h-12 w-12 ${isListening ? 'bg-secondary animate-pulse' : ''}`}
+                className={`shrink-0 h-11 w-11 rounded-xl border-border/60 ${isListening ? 'animate-pulse shadow-soft' : ''}`}
                 title="Voice input"
               >
                 <Mic className="h-5 w-5" />
@@ -186,12 +186,12 @@ export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto }:
                   onChange={(e) => setInput(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSend()}
                   placeholder="Tell me what you're looking for..."
-                  className="h-12 text-base pr-12 bg-background/50 border-2 focus:border-primary transition-colors"
+                  className="h-11 text-sm pr-12 bg-background/50 border-border/60 rounded-xl focus:border-primary transition-colors font-medium placeholder:text-muted-foreground/60"
                 />
                 <Button 
                   onClick={handleSend} 
                   size="icon" 
-                  className="absolute right-1 top-1 h-10 w-10"
+                  className="absolute right-1 top-1 h-9 w-9 rounded-lg"
                   disabled={!input.trim()}
                 >
                   <Send className="h-4 w-4" />
@@ -201,8 +201,8 @@ export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto }:
           </TooltipProvider>
           
           {uploadedPhoto && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground bg-secondary/20 px-3 py-2 rounded-lg">
-              <Camera className="h-4 w-4" />
+            <div className="flex items-center gap-2 text-xs font-medium text-secondary-foreground bg-secondary/40 px-3 py-2 rounded-lg border border-secondary/60">
+              <Camera className="h-3.5 w-3.5" />
               <span>Photo uploaded - try-on ready!</span>
             </div>
           )}
