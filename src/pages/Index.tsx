@@ -52,17 +52,17 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-border bg-card sticky top-0 z-10 shadow-soft">
+      <header className="border-b border-border/60 bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-soft">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-primary rounded-lg">
+            <div className="p-2.5 bg-gradient-hero rounded-xl shadow-card">
               <ShoppingBag className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent tracking-tight">
                 Wearly
               </h1>
-              <p className="text-sm text-muted-foreground">Voice-powered virtual try-on assistant</p>
+              <p className="text-xs font-medium text-muted-foreground">AI Fashion Assistant</p>
             </div>
           </div>
         </div>
