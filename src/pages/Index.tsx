@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { ChatInterface } from "@/components/ChatInterface";
-import { ProductGrid } from "@/components/ProductGrid";
 import { Product } from "@/types/product";
-import { generateMockProducts } from "@/utils/mockProducts";
-import { useToast } from "@/hooks/use-toast";
+import { ProductGrid } from "@/components/ProductGrid";
 import { ShoppingBag } from "lucide-react";
+import { generateMockProducts } from "@/utils/mockProducts";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -59,7 +59,7 @@ const Index = () => {
               <ShoppingBag className="h-6 w-6 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent tracking-tight">
+              <h1 className="text-2xl font-bold bg-gradient-hero bg-clip-text tracking-tight">
                 Wearly
               </h1>
               <p className="text-xs font-medium text-muted-foreground">AI Fashion Assistant</p>
