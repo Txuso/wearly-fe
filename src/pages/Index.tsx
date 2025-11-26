@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ChatInterface } from "@/components/ChatInterface";
 import { ProductGrid } from "@/components/ProductGrid";
-import { FilterPanel } from "@/components/FilterPanel";
 import { Product } from "@/types/product";
 import { generateMockProducts } from "@/utils/mockProducts";
 import { useToast } from "@/hooks/use-toast";
@@ -9,10 +8,6 @@ import { ShoppingBag } from "lucide-react";
 
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
-  const [maxPrice, setMaxPrice] = useState(500);
-  const [selectedColors, setSelectedColors] = useState<string[]>([]);
-  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
   const { toast } = useToast();
 
@@ -53,22 +48,6 @@ const Index = () => {
     }
   };
 
-  const toggleArrayItem = (array: string[], item: string, setter: (arr: string[]) => void) => {
-    if (array.includes(item)) {
-      setter(array.filter(i => i !== item));
-    } else {
-      setter([...array, item]);
-    }
-  };
-
-  // Filter products based on selected filters
-  const filteredProducts = products.filter(product => {
-    if (product.price > maxPrice) return false;
-    if (selectedColors.length > 0 && !selectedColors.includes(product.color)) return false;
-    if (selectedSizes.length > 0 && !selectedSizes.includes(product.size)) return false;
-    if (selectedCategories.length > 0 && !selectedCategories.includes(product.category)) return false;
-    return true;
-  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -81,9 +60,9 @@ const Index = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold bg-gradient-hero bg-clip-text text-transparent">
-                SmartShop AI
+                Wearly
               </h1>
-              <p className="text-sm text-muted-foreground">Your AI-powered shopping assistant</p>
+              <p className="text-sm text-muted-foreground">Voice-powered virtual try-on assistant</p>
             </div>
           </div>
         </div>
@@ -91,36 +70,21 @@ const Index = () => {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Sidebar - Chat */}
-          <div className="lg:col-span-4 xl:col-span-3">
-            <div className="h-[calc(100vh-180px)] sticky top-24">
-              <ChatInterface 
-                onSearchRequest={handleSearchRequest}
-                onPhotoUpload={handlePhotoUpload}
-              />
-            </div>
-          </div>
-
-          {/* Main Content - Products */}
-          <div className="lg:col-span-5 xl:col-span-6">
-            <ProductGrid 
-              products={filteredProducts} 
-              onProductSelect={handleProductSelect}
+        <div className="max-w-7xl mx-auto space-y-6">
+          {/* Chat Interface */}
+          <div className="w-full">
+            <ChatInterface 
+              onSearchRequest={handleSearchRequest}
+              onPhotoUpload={handlePhotoUpload}
+              uploadedPhoto={uploadedPhoto}
             />
           </div>
 
-          {/* Right Sidebar - Filters */}
-          <div className="lg:col-span-3 xl:col-span-3">
-            <FilterPanel
-              maxPrice={maxPrice}
-              onMaxPriceChange={setMaxPrice}
-              selectedColors={selectedColors}
-              onColorToggle={(color) => toggleArrayItem(selectedColors, color, setSelectedColors)}
-              selectedSizes={selectedSizes}
-              onSizeToggle={(size) => toggleArrayItem(selectedSizes, size, setSelectedSizes)}
-              selectedCategories={selectedCategories}
-              onCategoryToggle={(category) => toggleArrayItem(selectedCategories, category, setSelectedCategories)}
+          {/* Products Grid */}
+          <div className="w-full">
+            <ProductGrid 
+              products={products} 
+              onProductSelect={handleProductSelect}
             />
           </div>
         </div>
