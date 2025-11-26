@@ -30,7 +30,10 @@ export const generateMockProducts = (query: string): Product[] => {
       name: `${detectedColor.charAt(0).toUpperCase() + detectedColor.slice(1)} ${detectedCategory.charAt(0).toUpperCase() + detectedCategory.slice(1)} - Style ${i + 1}`,
       price,
       originalPrice: hasDiscount ? price + Math.floor(Math.random() * 30) + 10 : undefined,
-      image: `https://images.unsplash.com/photo-${1540000000000 + i * 100000}?w=400&h=400&fit=crop&auto=format`,
+      image:
+        detectedCategory === "pants"
+          ? "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&w=400&h=400&fit=crop"
+          : `https://images.unsplash.com/photo-${1540000000000 + i * 100000}?w=400&h=400&fit=crop&auto=format`,
       source: sources[Math.floor(Math.random() * sources.length)],
       color: detectedColor.charAt(0).toUpperCase() + detectedColor.slice(1),
       size: detectedSize.toUpperCase(),
