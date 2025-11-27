@@ -5,6 +5,11 @@ import { ShoppingBag } from "lucide-react";
 import { generateMockProducts } from "@/utils/mockProducts";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import {
+  ResizablePanelGroup,
+  ResizablePanel,
+  ResizableHandle,
+} from "@/components/ui/resizable";
 
 type ApiProduct = Partial<Product> & {
   price?: number | string;
@@ -143,25 +148,33 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-6">
-        <div className="max-w-7xl mx-auto space-y-6">
-          {/* Chat Interface */}
-          <div className="w-full">
-            <ChatInterface 
-              onSearchRequest={handleSearchRequest}
-              onPhotoUpload={handlePhotoUpload}
-              uploadedPhoto={uploadedPhoto}
-            />
-          </div>
+      <div className="container mx-auto px-4 py-6 h-[calc(100vh-88px)]">
+        <div className="max-w-7xl mx-auto h-full">
+          <ResizablePanelGroup direction="vertical" className="h-full rounded-lg border border-border/60">
+            {/* Chat Interface Panel */}
+            <ResizablePanel defaultSize={35} minSize={20} maxSize={60}>
+              <div className="h-full overflow-auto p-6 bg-card/50">
+                <ChatInterface 
+                  onSearchRequest={handleSearchRequest}
+                  onPhotoUpload={handlePhotoUpload}
+                  uploadedPhoto={uploadedPhoto}
+                />
+              </div>
+            </ResizablePanel>
 
-          {/* Products Grid */}
-          <div className="w-full">
-            <ProductGrid 
-              products={products} 
-              onProductSelect={handleProductSelect}
-              uploadedPhoto={uploadedPhoto}
-            />
-          </div>
+            <ResizableHandle withHandle className="bg-border/60 hover:bg-primary/20 transition-colors" />
+
+            {/* Products Grid Panel */}
+            <ResizablePanel defaultSize={65} minSize={40}>
+              <div className="h-full overflow-auto p-6 bg-background">
+                <ProductGrid 
+                  products={products} 
+                  onProductSelect={handleProductSelect}
+                  uploadedPhoto={uploadedPhoto}
+                />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
         </div>
       </div>
     </div>
