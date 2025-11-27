@@ -5,23 +5,99 @@ import { ShoppingBag } from "lucide-react";
 interface ProductGridProps {
   products: Product[];
   onProductSelect: (product: Product) => void;
+  uploadedPhoto?: File | null;
 }
 
-export const ProductGrid = ({ products, onProductSelect }: ProductGridProps) => {
+export const ProductGrid = ({ products, onProductSelect, uploadedPhoto }: ProductGridProps) => {
+  const firstThreeProducts = products.slice(0, 3);
+  const remainingProducts = products.slice(3);
+  const photoUrl = uploadedPhoto ? URL.createObjectURL(uploadedPhoto) : null;
+
   return (
-    <div className="w-full">
+    <div className="w-full space-y-6">
       {products.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-          {products.map((product, index) => (
-            <div
-              key={product.id}
-              className="animate-in fade-in slide-in-from-bottom-4 duration-500"
-              style={{ animationDelay: `${index * 80}ms` }}
-            >
-              <ProductCard product={product} onClick={() => onProductSelect(product)} />
+        <>
+          {/* First 3 products with comparison view */}
+          {uploadedPhoto && firstThreeProducts.length > 0 && (
+            <div className="space-y-4">
+              <h2 className="text-lg font-semibold text-foreground">Comparación rápida</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {firstThreeProducts.map((product, index) => (
+                  <div
+                    key={product.id}
+                    className="animate-in fade-in slide-in-from-bottom-4 duration-500 cursor-pointer"
+                    style={{ animationDelay: `${index * 80}ms` }}
+                    onClick={() => onProductSelect(product)}
+                  >
+                    <div className="border border-border/80 rounded-xl overflow-hidden bg-card shadow-card hover:shadow-medium transition-all duration-300">
+                      <div className="grid grid-cols-2 gap-0">
+                        <div className="relative aspect-[3/4] bg-gradient-subtle">
+                          <img
+                            src={photoUrl!}
+                            alt="Tu foto"
+                            className="object-cover w-full h-full"
+                          />
+                          <div className="absolute bottom-2 left-2 right-2">
+                            <span className="text-[10px] font-medium px-2 py-1 bg-background/90 backdrop-blur-sm rounded-full">
+                              Tu foto
+                            </span>
+                          </div>
+                        </div>
+                        <div className="relative aspect-[3/4] bg-gradient-subtle">
+                          <img
+                            src={product.image}
+                            alt={product.name}
+                            className="object-cover w-full h-full"
+                          />
+                          <div className="absolute bottom-2 left-2 right-2">
+                            <span className="text-[10px] font-medium px-2 py-1 bg-background/90 backdrop-blur-sm rounded-full">
+                              Producto
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="p-3.5 space-y-2">
+                        <h3 className="font-semibold text-base leading-snug line-clamp-2">
+                          {product.name}
+                        </h3>
+                        <div className="flex items-baseline gap-2">
+                          <span className="text-lg font-bold text-foreground">
+                            €{product.price.toFixed(2)}
+                          </span>
+                          {product.originalPrice && (
+                            <span className="text-xs text-muted-foreground line-through">
+                              €{product.originalPrice.toFixed(2)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </div>
-          ))}
-        </div>
+          )}
+
+          {/* Regular products or all products if no photo */}
+          {((uploadedPhoto && remainingProducts.length > 0) || !uploadedPhoto) && (
+            <div className="space-y-4">
+              {uploadedPhoto && remainingProducts.length > 0 && (
+                <h2 className="text-lg font-semibold text-foreground">Más resultados</h2>
+              )}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {(uploadedPhoto ? remainingProducts : products).map((product, index) => (
+                  <div
+                    key={product.id}
+                    className="animate-in fade-in slide-in-from-bottom-4 duration-500"
+                    style={{ animationDelay: `${index * 80}ms` }}
+                  >
+                    <ProductCard product={product} onClick={() => onProductSelect(product)} />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       ) : (
         <div className="flex flex-col items-center justify-center py-20 text-center">
           <div className="p-4 bg-gradient-subtle rounded-2xl mb-4">
