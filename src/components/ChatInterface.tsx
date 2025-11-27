@@ -1,15 +1,16 @@
-import { useState, useRef, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Mic, Send, Camera } from "lucide-react";
-import { MessageBubble } from "./MessageBubble";
-import { useToast } from "@/hooks/use-toast";
+import { Camera, Mic, Send } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { useEffect, useRef, useState } from "react";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { MessageBubble } from "./MessageBubble";
+import { useToast } from "@/hooks/use-toast";
 
 interface Message {
   id: string;

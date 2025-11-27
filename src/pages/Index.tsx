@@ -6,20 +6,94 @@ import { generateMockProducts } from "@/utils/mockProducts";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
+type ApiProduct = Partial<Product> & {
+  price?: number | string;
+  originalPrice?: number | string;
+};
+
+interface ChatApiResponse {
+  reply?: string;
+  message?: string;
+  products?: ApiProduct[];
+}
+
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
   const { toast } = useToast();
 
-  const handleSearchRequest = (query: string) => {
-    // Generate mock products based on query
-    const mockProducts = generateMockProducts(query);
-    setProducts(mockProducts);
-    
-    toast({
-      title: "Search completed",
-      description: `Found ${mockProducts.length} products matching your request.`,
-    });
+  const handleSearchRequest = async (query: string) => {
+    const endpoint = "http://localhost:3000/api/chat";
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ message: query }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Server responded with status ${response.status}`);
+      }
+
+      const data = (await response.json()) as ChatApiResponse;
+      const reply: string =
+        data?.reply ??
+        data?.message ??
+        `He recibido tu búsqueda para "${query}". Estoy preparando recomendaciones.`;
+
+      const rawProducts: ApiProduct[] = Array.isArray(data?.products) ? data.products : [];
+      const normalizedProducts: Product[] = rawProducts.map((item, index) => ({
+        id: item?.id ?? `api-product-${index}`,
+        name: item?.name ?? `Suggested item ${index + 1}`,
+        price: typeof item?.price === "number" ? item.price : Number(item?.price) || 0,
+        originalPrice:
+          typeof item?.originalPrice === "number"
+            ? item.originalPrice
+            : item?.originalPrice
+            ? Number(item.originalPrice)
+            : undefined,
+        image:
+          item?.image ??
+          "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&w=400&h=400&fit=crop",
+        source: item?.source ?? "Assistant",
+        color: item?.color ?? "Assorted",
+        size: item?.size ?? "M",
+        category: item?.category ?? "Apparel",
+        inStock: typeof item?.inStock === "boolean" ? item.inStock : true,
+        description: item?.description ?? "Curated recommendation from the assistant.",
+      }));
+
+      setProducts(normalizedProducts);
+
+      toast({
+        title: "Assistant response",
+        description: normalizedProducts.length
+          ? `Encontré ${normalizedProducts.length} productos para ti.`
+          : "No he encontrado productos, pero seguiré buscando.",
+      });
+
+      return { reply, products: normalizedProducts };
+    } catch (error) {
+      console.error("Error contacting chat API", error);
+
+      const fallbackProducts = generateMockProducts(query);
+      setProducts(fallbackProducts);
+
+      toast({
+        title: "Conexión con el asistente fallida",
+        description: "Mostrando resultados simulados mientras se restablece la conexión.",
+        variant: "destructive",
+      });
+
+      return {
+        reply:
+          "No he podido conectar con el servidor ahora mismo, así que te muestro unas recomendaciones simuladas.",
+        products: fallbackProducts,
+      };
+    }
   };
 
   const handlePhotoUpload = (file: File) => {
