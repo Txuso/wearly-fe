@@ -1,6 +1,7 @@
 import { ChatInterface } from "@/components/ChatInterface";
 import { Product } from "@/types/product";
 import { ProductGrid } from "@/components/ProductGrid";
+import { ProductDetailModal } from "@/components/ProductDetailModal";
 import { ShoppingBag } from "lucide-react";
 import { generateMockProducts } from "@/utils/mockProducts";
 import { useState } from "react";
@@ -25,6 +26,8 @@ interface ChatApiResponse {
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [uploadedPhoto, setUploadedPhoto] = useState<File | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const { toast } = useToast();
 
   const handleSearchRequest = async (query: string) => {
@@ -113,23 +116,19 @@ const Index = () => {
   };
 
   const handleProductSelect = (product: Product) => {
-    if (uploadedPhoto) {
-      toast({
-        title: "Generating try-on",
-        description: `Creating virtual try-on for ${product.name}...`,
-      });
-      // Here you would call Nano Banana API with the uploaded photo and product
-    } else {
-      toast({
-        title: product.name,
-        description: `€${product.price} - ${product.source}`,
-      });
-    }
+    setSelectedProduct(product);
+    setIsModalOpen(true);
   };
 
 
   return (
     <div className="min-h-screen bg-background">
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        uploadedPhoto={uploadedPhoto}
+      />
       {/* Header */}
       <header className="border-b border-border/60 bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-soft">
         <div className="container mx-auto px-4 py-4">
