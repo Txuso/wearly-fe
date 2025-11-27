@@ -135,9 +135,10 @@ export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto }:
   };
 
   return (
-    <div className="flex flex-col bg-card rounded-2xl shadow-card overflow-hidden border border-border/60">
+    <div className="flex flex-col h-full bg-card rounded-2xl shadow-card overflow-hidden border border-border/60">
+      {/* Messages Area - Grows to fill space */}
       {messages.length > 1 && (
-        <div className="max-h-48 overflow-y-auto p-4 space-y-3 border-b border-border/60 bg-gradient-subtle">
+        <div className="flex-1 overflow-y-auto p-4 space-y-3 border-b border-border/60 bg-gradient-subtle min-h-0">
           {messages.map((message) => (
             <MessageBubble key={message.id} message={message} />
           ))}
@@ -145,7 +146,8 @@ export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto }:
         </div>
       )}
 
-      <div className="p-5">
+      {/* Input Area - Fixed size at bottom */}
+      <div className="flex-shrink-0 p-5">
         <div className="flex flex-col gap-4">
           <input
             type="file"
@@ -185,7 +187,16 @@ export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto }:
                 <Input
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
-                  onKeyPress={(e) => e.key === "Enter" && handleSend()}
+                  onKeyPress={(e) => {
+                    if (e.key === "Enter") {
+                      // Stop recording when Enter is pressed
+                      if (isListening) {
+                        recognitionRef.current?.stop();
+                        setIsListening(false);
+                      }
+                      handleSend();
+                    }
+                  }}
                   placeholder="Tell me what you're looking for..."
                   className="h-11 text-sm pr-12 bg-background/50 border-border/60 rounded-xl focus:border-primary transition-colors font-medium placeholder:text-muted-foreground/60"
                 />

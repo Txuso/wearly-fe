@@ -153,7 +153,7 @@ const Index = () => {
           <ResizablePanelGroup direction="vertical" className="h-full rounded-lg border border-border/60">
             {/* Chat Interface Panel */}
             <ResizablePanel defaultSize={35} minSize={20} maxSize={60}>
-              <div className="h-full overflow-auto p-6 bg-card/50">
+              <div className="h-full">
                 <ChatInterface 
                   onSearchRequest={handleSearchRequest}
                   onPhotoUpload={handlePhotoUpload}
