@@ -159,6 +159,7 @@ const Index = () => {
             <ProductGrid 
               products={products} 
               onProductSelect={handleProductSelect}
+              uploadedPhoto={uploadedPhoto}
             />
           </div>
         </div>
