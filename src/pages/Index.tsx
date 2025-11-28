@@ -2,6 +2,7 @@ import { ChatInterface } from "@/components/ChatInterface";
 import { Product } from "@/types/product";
 import { ProductGrid } from "@/components/ProductGrid";
 import { ProductDetailModal } from "@/components/ProductDetailModal";
+import { NavLink } from "@/components/NavLink";
 import { ShoppingBag } from "lucide-react";
 import { generateMockProducts } from "@/utils/mockProducts";
 import { useState } from "react";
@@ -111,16 +112,34 @@ const Index = () => {
       {/* Header */}
       <header className="border-b border-border/60 bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-soft">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-3">
-            <div className="p-2.5 bg-gradient-hero rounded-xl shadow-card">
-              <ShoppingBag className="h-6 w-6 text-primary-foreground" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 bg-gradient-hero rounded-xl shadow-card">
+                <ShoppingBag className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-hero bg-clip-text tracking-tight">
+                  Wearly
+                </h1>
+                <p className="text-xs font-medium text-muted-foreground">AI Fashion Assistant</p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-2xl font-bold bg-gradient-hero bg-clip-text tracking-tight">
-                Wearly
-              </h1>
-              <p className="text-xs font-medium text-muted-foreground">AI Fashion Assistant</p>
-            </div>
+            <nav className="flex items-center gap-6">
+              <NavLink
+                to="/"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                activeClassName="text-foreground"
+              >
+                Home
+              </NavLink>
+              <NavLink
+                to="/pricing"
+                className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                activeClassName="text-foreground"
+              >
+                Pricing
+              </NavLink>
+            </nav>
           </div>
         </div>
       </header>
