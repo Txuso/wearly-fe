@@ -6,22 +6,12 @@ import { ShoppingBag } from "lucide-react";
 import { generateMockProducts } from "@/utils/mockProducts";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { chatApi, ApiError } from "@/services/api";
 import {
   ResizablePanelGroup,
   ResizablePanel,
   ResizableHandle,
 } from "@/components/ui/resizable";
-
-type ApiProduct = Partial<Product> & {
-  price?: number | string;
-  originalPrice?: number | string;
-};
-
-interface ChatApiResponse {
-  reply?: string;
-  message?: string;
-  products?: ApiProduct[];
-}
 
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -31,28 +21,13 @@ const Index = () => {
   const { toast } = useToast();
 
   const handleSearchRequest = async (query: string) => {
-    const endpoint = "http://localhost:3000/api/chat";
-
     try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ message: query }),
-      });
+      const data = await chatApi.sendMessage({ message: query });
 
-      if (!response.ok) {
-        throw new Error(`Server responded with status ${response.status}`);
-      }
-
-      const data = (await response.json()) as ChatApiResponse;
-      const reply: string =
-        data?.reply ??
-        data?.message ??
+      const reply: string = data?.reply ??
         `He recibido tu búsqueda para "${query}". Estoy preparando recomendaciones.`;
 
-      const rawProducts: ApiProduct[] = Array.isArray(data?.products) ? data.products : [];
+      const rawProducts = Array.isArray(data?.products) ? data.products : [];
       const normalizedProducts: Product[] = rawProducts.map((item, index) => ({
         id: item?.id ?? `api-product-${index}`,
         name: item?.name ?? `Suggested item ${index + 1}`,
@@ -61,8 +36,8 @@ const Index = () => {
           typeof item?.originalPrice === "number"
             ? item.originalPrice
             : item?.originalPrice
-            ? Number(item.originalPrice)
-            : undefined,
+              ? Number(item.originalPrice)
+              : undefined,
         image:
           item?.image ??
           "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&w=400&h=400&fit=crop",
@@ -90,9 +65,13 @@ const Index = () => {
       const fallbackProducts = generateMockProducts(query);
       setProducts(fallbackProducts);
 
+      const errorMessage = error instanceof ApiError
+        ? `Error ${error.status}: ${error.message}`
+        : "No se pudo conectar con el servidor";
+
       toast({
         title: "Conexión con el asistente fallida",
-        description: "Mostrando resultados simulados mientras se restablece la conexión.",
+        description: errorMessage + ". Mostrando resultados simulados.",
         variant: "destructive",
       });
 
@@ -153,7 +132,7 @@ const Index = () => {
             {/* Chat Interface Panel */}
             <ResizablePanel defaultSize={35} minSize={20} maxSize={60}>
               <div className="h-full">
-                <ChatInterface 
+                <ChatInterface
                   onSearchRequest={handleSearchRequest}
                   onPhotoUpload={handlePhotoUpload}
                   uploadedPhoto={uploadedPhoto}
@@ -166,8 +145,8 @@ const Index = () => {
             {/* Products Grid Panel */}
             <ResizablePanel defaultSize={65} minSize={40}>
               <div className="h-full overflow-auto p-6 bg-background">
-                <ProductGrid 
-                  products={products} 
+                <ProductGrid
+                  products={products}
                   onProductSelect={handleProductSelect}
                   uploadedPhoto={uploadedPhoto}
                 />
