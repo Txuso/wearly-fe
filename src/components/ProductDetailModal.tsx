@@ -113,25 +113,25 @@ export const ProductDetailModal = ({
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Color</p>
                 <Badge variant="outline" className="text-sm font-medium">
-                  {product.color}
+                  {product.color || "-"}
                 </Badge>
               </div>
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Talla</p>
                 <Badge variant="outline" className="text-sm font-medium">
-                  {product.size}
+                  {product.size || "-"}
                 </Badge>
               </div>
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Categoría</p>
                 <Badge variant="outline" className="text-sm font-medium">
-                  {product.category}
+                  {product.category || "-"}
                 </Badge>
               </div>
               <div className="space-y-1">
                 <p className="text-xs text-muted-foreground uppercase tracking-wide">Tienda</p>
                 <Badge variant="outline" className="text-sm font-medium">
-                  {product.source}
+                  {product.source || "-"}
                 </Badge>
               </div>
             </div>

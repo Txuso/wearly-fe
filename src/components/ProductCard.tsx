@@ -20,6 +20,13 @@ export const ProductCard = ({ product, onClick }: ProductCardProps) => {
           alt={product.name}
           className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
         />
+        {product.discount && product.discount > 0 && (
+          <div className="absolute top-2 right-2">
+            <Badge className="bg-red-500 text-white font-bold text-xs px-2 py-1">
+              -{product.discount}%
+            </Badge>
+          </div>
+        )}
         {product.inStock === false && (
           <div className="absolute inset-0 bg-background/90 flex items-center justify-center backdrop-blur-sm">
             <Badge variant="secondary" className="font-medium">Out of Stock</Badge>
@@ -53,15 +60,21 @@ export const ProductCard = ({ product, onClick }: ProductCardProps) => {
         </div>
         
         <div className="flex flex-wrap gap-1.5">
-          <Badge variant="outline" className="text-[10px] font-medium px-2 py-0.5 border-border/60 bg-secondary/30">
-            {product.color}
-          </Badge>
-          <Badge variant="outline" className="text-[10px] font-medium px-2 py-0.5 border-border/60 bg-secondary/30">
-            {product.size}
-          </Badge>
-          <Badge variant="outline" className="text-[10px] font-medium px-2 py-0.5 border-border/60 bg-secondary/30">
-            {product.category}
-          </Badge>
+          {product.color && (
+            <Badge variant="outline" className="text-[10px] font-medium px-2 py-0.5 border-border/60 bg-secondary/30">
+              {product.color}
+            </Badge>
+          )}
+          {product.size && (
+            <Badge variant="outline" className="text-[10px] font-medium px-2 py-0.5 border-border/60 bg-secondary/30">
+              {product.size}
+            </Badge>
+          )}
+          {product.category && (
+            <Badge variant="outline" className="text-[10px] font-medium px-2 py-0.5 border-border/60 bg-secondary/30">
+              {product.category}
+            </Badge>
+          )}
         </div>
         
         <Button 

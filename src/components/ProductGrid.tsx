@@ -1,21 +1,66 @@
-import { ProductCard } from "./ProductCard";
+import { useState, useEffect } from "react";
+import { Loader2, ShoppingBag } from "lucide-react";
+
 import { Product } from "@/types/product";
-import { ShoppingBag } from "lucide-react";
+import { ProductCard } from "./ProductCard";
+
+const loadingMessages = [
+  "Finding the best fashion pieces just for you",
+  "Searching through thousands of stylish options",
+  "Matching your style with perfect outfits",
+  "Discovering trending pieces for your wardrobe",
+  "Curating exclusive selections from top brands",
+  "AI is analyzing the latest fashion trends",
+  "Handpicking items that match your taste",
+];
 
 interface ProductGridProps {
   products: Product[];
   onProductSelect: (product: Product) => void;
   uploadedPhoto?: File | null;
+  isLoading?: boolean;
 }
 
-export const ProductGrid = ({ products, onProductSelect, uploadedPhoto }: ProductGridProps) => {
+export const ProductGrid = ({ products, onProductSelect, uploadedPhoto, isLoading = false }: ProductGridProps) => {
   const firstThreeProducts = products.slice(0, 3);
   const remainingProducts = products.slice(3);
   const photoUrl = uploadedPhoto ? URL.createObjectURL(uploadedPhoto) : null;
 
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [isMessageVisible, setIsMessageVisible] = useState(true);
+
+  useEffect(() => {
+    if (!isLoading) return;
+    
+    const interval = setInterval(() => {
+      setIsMessageVisible(false);
+      
+      setTimeout(() => {
+        setCurrentMessageIndex((prev) => (prev + 1) % loadingMessages.length);
+        setIsMessageVisible(true);
+      }, 300);
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [isLoading]);
+
   return (
     <div className="w-full space-y-6">
-      {products.length > 0 ? (
+      {isLoading ? (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="mb-4">
+            <Loader2 className="h-16 w-16 text-primary animate-spin" />
+          </div>
+          <p className="text-xl font-semibold text-foreground mb-2">Creating your perfect style...</p>
+          <p 
+            className={`text-sm text-muted-foreground max-w-md font-medium transition-opacity duration-300 ${
+              isMessageVisible ? 'opacity-100' : 'opacity-0'
+            }`}
+          >
+            {loadingMessages[currentMessageIndex]}
+          </p>
+        </div>
+      ) : products.length > 0 ? (
         <>
           {/* First 3 products with comparison view */}
           {uploadedPhoto && firstThreeProducts.length > 0 && (
