@@ -7,13 +7,17 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, ShoppingBag } from "lucide-react";
+import { ExternalLink, ShoppingBag, Loader2 } from "lucide-react";
+import { useState, useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProductDetailModalProps {
   product: Product | null;
   isOpen: boolean;
   onClose: () => void;
   uploadedPhoto?: File | null;
+  sessionId: string;
+  onProductUpdate?: (updatedProduct: Product) => void;
 }
 
 export const ProductDetailModal = ({
@@ -21,10 +25,66 @@ export const ProductDetailModal = ({
   isOpen,
   onClose,
   uploadedPhoto,
+  sessionId,
+  onProductUpdate,
 }: ProductDetailModalProps) => {
+  const [isLoadingTryOn, setIsLoadingTryOn] = useState(false);
+  const [tryOnImage, setTryOnImage] = useState<string | null>(null);
+  const { toast } = useToast();
+
+  // Call try-on API when modal opens and photo is uploaded
+  useEffect(() => {
+    if (isOpen && product && uploadedPhoto && !product.userProductImage) {
+      handleTryOn();
+    }
+    // Reset try-on image when modal closes or product changes
+    if (!isOpen) {
+      setTryOnImage(null);
+      setIsLoadingTryOn(false);
+    }
+  }, [isOpen, product?.id]);
+
+  const handleTryOn = async () => {
+    if (!product || !sessionId) return;
+
+    setIsLoadingTryOn(true);
+    try {
+      const response = await fetch('http://localhost:3000/api/try-on/from-item', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId,
+          itemImageUrl: product.image,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Try-on request failed');
+
+      const data = await response.json();
+      if (data.tryOnImageUrl) {
+        setTryOnImage(data.tryOnImageUrl);
+        // Update the product with the try-on image
+        const updatedProduct = { ...product, userProductImage: data.tryOnImageUrl };
+        if (onProductUpdate) {
+          onProductUpdate(updatedProduct);
+        }
+      }
+    } catch (error) {
+      console.error('Error during try-on:', error);
+      toast({
+        title: "Virtual Try-On Error",
+        description: "There was a problem generating the virtual try-on. Please try again later.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingTryOn(false);
+    }
+  };
+
   if (!product) return null;
 
   const photoUrl = uploadedPhoto ? URL.createObjectURL(uploadedPhoto) : null;
+  const displayTryOnImage = tryOnImage || product.userProductImage;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -40,7 +100,7 @@ export const ProductDetailModal = ({
 
         <div className="p-6">
           {/* Comparison Grid */}
-          {product.userProductImage ? (
+          {uploadedPhoto ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               {/* Virtual Try-On */}
               <div className="space-y-3 animate-in fade-in slide-in-from-left-4 duration-500">
@@ -48,11 +108,21 @@ export const ProductDetailModal = ({
                   Virtual Try-On
                 </h3>
                 <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border-2 border-border/80 shadow-card bg-gradient-subtle">
-                  <img
-                    src={product.userProductImage}
-                    alt="Virtual try-on"
-                    className="object-cover w-full h-full"
-                  />
+                  {isLoadingTryOn ? (
+                    <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm">
+                      <Loader2 className="h-12 w-12 text-primary animate-spin" />
+                    </div>
+                  ) : displayTryOnImage ? (
+                    <img
+                      src={displayTryOnImage}
+                      alt="Virtual try-on"
+                      className="object-cover w-full h-full"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-gradient-subtle">
+                      <p className="text-sm text-muted-foreground">Processing...</p>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -155,8 +225,9 @@ export const ProductDetailModal = ({
                 className="flex-1 h-12 text-base font-semibold rounded-xl shadow-card hover:shadow-medium transition-all"
                 disabled={product.inStock === false}
                 onClick={() => {
-                  // In a real app, this would open the product URL
-                  window.open(`https://example.com/product/${product.id}`, '_blank');
+                  if (product.url) {
+                    window.open(product.url, '_blank');
+                  }
                 }}
               >
                 <ExternalLink className="h-5 w-5 mr-2" />

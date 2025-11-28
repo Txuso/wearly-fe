@@ -151,6 +151,10 @@ export const ProductCard = ({ product, onClick, onTryOn, isLoading = false }: Pr
             className="w-full mt-1 h-8 text-xs font-semibold rounded-full" 
             size="sm"
             disabled={product.inStock === false}
+            onClick={(e) => {
+              e.stopPropagation();
+              onClick();
+            }}
           >
             View Details
           </Button>

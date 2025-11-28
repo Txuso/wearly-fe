@@ -330,6 +330,12 @@ const Index = () => {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         uploadedPhoto={uploadedPhoto}
+        sessionId={sessionId}
+        onProductUpdate={(updatedProduct) => {
+          setProducts(prev => 
+            prev.map(p => p.id === updatedProduct.id ? updatedProduct : p)
+          );
+        }}
       />
       {/* Header */}
       <header className="border-b border-border/60 bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-soft">
