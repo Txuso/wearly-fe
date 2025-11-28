@@ -41,9 +41,10 @@ interface ChatApiResponse {
   searchResults: BackendProduct[];
 }
 
-const CHAT_ENDPOINT = "http://localhost:3000/api/chat";
-const UPLOAD_IMAGE_ENDPOINT = "http://localhost:3000/api/upload-user-image";
-const TRY_ON_ENDPOINT = "http://localhost:3000/api/try-on/from-item";
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const CHAT_ENDPOINT = `${API_BASE_URL}/api/chat`;
+const UPLOAD_IMAGE_ENDPOINT = `${API_BASE_URL}/api/upload-user-image`;
+const TRY_ON_ENDPOINT = `${API_BASE_URL}/api/try-on/from-item`;
 
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
