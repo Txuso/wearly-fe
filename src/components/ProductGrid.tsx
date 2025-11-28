@@ -65,7 +65,7 @@ export const ProductGrid = ({ products, onProductSelect, uploadedPhoto, isLoadin
           {/* First 3 products with comparison view */}
           {uploadedPhoto && firstThreeProducts.length > 0 && (
             <div className="space-y-4">
-              <h2 className="text-lg font-semibold text-foreground">Comparación rápida</h2>
+              <h2 className="text-lg font-semibold text-foreground">Quick Comparison</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {firstThreeProducts.map((product, index) => (
                   <div
@@ -74,49 +74,76 @@ export const ProductGrid = ({ products, onProductSelect, uploadedPhoto, isLoadin
                     style={{ animationDelay: `${index * 80}ms` }}
                     onClick={() => onProductSelect(product)}
                   >
-                    <div className="border border-border/80 rounded-xl overflow-hidden bg-card shadow-card hover:shadow-medium transition-all duration-300">
-                      <div className="grid grid-cols-2 gap-0">
-                        <div className="relative aspect-[3/4] bg-gradient-subtle">
-                          <img
-                            src={photoUrl!}
-                            alt="Tu foto"
-                            className="object-cover w-full h-full"
-                          />
+                    {product.userProductImage ? (
+                      <div className="border border-border/80 rounded-xl overflow-hidden bg-card shadow-card hover:shadow-medium transition-all duration-300">
+                        <div className="grid grid-cols-2 gap-0">
+                          <div className="relative aspect-[3/4] bg-gradient-subtle">
+                            <img
+                              src={product.userProductImage}
+                              alt="Virtual try-on"
+                              className="object-cover w-full h-full"
+                            />
+                            <div className="absolute bottom-2 left-2 right-2">
+                              <span className="text-[10px] font-medium px-2 py-1 bg-background/90 backdrop-blur-sm rounded-full">
+                                Virtual Try-On
+                              </span>
+                            </div>
+                          </div>
+                          <div className="relative aspect-[3/4] bg-gradient-subtle">
+                            <img
+                              src={product.image}
+                              alt={product.name}
+                              className="object-cover w-full h-full"
+                            />
                           <div className="absolute bottom-2 left-2 right-2">
                             <span className="text-[10px] font-medium px-2 py-1 bg-background/90 backdrop-blur-sm rounded-full">
-                              Tu foto
+                              Product
                             </span>
                           </div>
+                          </div>
                         </div>
+                        <div className="p-3.5 space-y-2">
+                          <h3 className="font-semibold text-base leading-snug line-clamp-2">
+                            {product.name}
+                          </h3>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-lg font-bold text-foreground">
+                              €{product.price.toFixed(2)}
+                            </span>
+                            {product.originalPrice && (
+                              <span className="text-xs text-muted-foreground line-through">
+                                €{product.originalPrice.toFixed(2)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="border border-border/80 rounded-xl overflow-hidden bg-card shadow-card hover:shadow-medium transition-all duration-300">
                         <div className="relative aspect-[3/4] bg-gradient-subtle">
                           <img
                             src={product.image}
                             alt={product.name}
                             className="object-cover w-full h-full"
                           />
-                          <div className="absolute bottom-2 left-2 right-2">
-                            <span className="text-[10px] font-medium px-2 py-1 bg-background/90 backdrop-blur-sm rounded-full">
-                              Producto
+                        </div>
+                        <div className="p-3.5 space-y-2">
+                          <h3 className="font-semibold text-base leading-snug line-clamp-2">
+                            {product.name}
+                          </h3>
+                          <div className="flex items-baseline gap-2">
+                            <span className="text-lg font-bold text-foreground">
+                              €{product.price.toFixed(2)}
                             </span>
+                            {product.originalPrice && (
+                              <span className="text-xs text-muted-foreground line-through">
+                                €{product.originalPrice.toFixed(2)}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </div>
-                      <div className="p-3.5 space-y-2">
-                        <h3 className="font-semibold text-base leading-snug line-clamp-2">
-                          {product.name}
-                        </h3>
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-lg font-bold text-foreground">
-                            €{product.price.toFixed(2)}
-                          </span>
-                          {product.originalPrice && (
-                            <span className="text-xs text-muted-foreground line-through">
-                              €{product.originalPrice.toFixed(2)}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -127,7 +154,7 @@ export const ProductGrid = ({ products, onProductSelect, uploadedPhoto, isLoadin
           {((uploadedPhoto && remainingProducts.length > 0) || !uploadedPhoto) && (
             <div className="space-y-4">
               {uploadedPhoto && remainingProducts.length > 0 && (
-                <h2 className="text-lg font-semibold text-foreground">Más resultados</h2>
+                <h2 className="text-lg font-semibold text-foreground">More Results</h2>
               )}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {(uploadedPhoto ? remainingProducts : products).map((product, index) => (

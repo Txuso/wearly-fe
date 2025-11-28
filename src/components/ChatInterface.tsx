@@ -1,4 +1,4 @@
-import { Camera, Mic, Send } from "lucide-react";
+import { Camera, Mic, Send, Loader2 } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -23,9 +23,10 @@ interface ChatInterfaceProps {
   onSearchRequest: (query: string) => void;
   onPhotoUpload: (file: File) => void;
   uploadedPhoto: File | null;
+  isUploadingPhoto?: boolean;
 }
 
-export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto }: ChatInterfaceProps) => {
+export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto, isUploadingPhoto = false }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -165,9 +166,14 @@ export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto }:
                     size="icon"
                     variant="outline"
                     onClick={handlePhotoClick}
+                    disabled={isUploadingPhoto}
                     className="shrink-0 h-11 w-11 rounded-xl border-border/60"
                   >
-                    <Camera className="h-5 w-5" />
+                    {isUploadingPhoto ? (
+                      <Loader2 className="h-5 w-5 animate-spin" />
+                    ) : (
+                      <Camera className="h-5 w-5" />
+                    )}
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="top" className="max-w-[200px]">

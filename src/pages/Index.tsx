@@ -41,6 +41,7 @@ interface ChatApiResponse {
 }
 
 const CHAT_ENDPOINT = "http://localhost:3000/api/chat";
+const UPLOAD_IMAGE_ENDPOINT = "http://localhost:3000/api/upload-user-image";
 
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -49,6 +50,7 @@ const Index = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -119,6 +121,7 @@ const Index = () => {
         price: item.price,
         ...(item.discount && item.discount > 0 ? { originalPrice: item.originalPrice, discount: item.discount } : {}),
         image: item.product_image_url || "https://images.unsplash.com/photo-1512436991641-6745cdb1723f?auto=format&w=400&h=400&fit=crop",
+        userProductImage: item.user_product_url,
         source: item.store,
         color: item.color,
         size: item.size,
@@ -134,7 +137,7 @@ const Index = () => {
         description: normalizedProducts.length
           ? `I found ${normalizedProducts.length} amazing ${normalizedProducts.length === 1 ? 'product' : 'products'} for you!`
           : "No products found yet, but I'll keep searching for you.",
-        className: "border-primary/50 bg-primary/25 backdrop-blur-sm",
+        className: "border-primary bg-primary/95 text-primary-foreground",
       });
 
       return { reply, products: normalizedProducts };
@@ -164,15 +167,84 @@ const Index = () => {
     }
   };
 
-  const handlePhotoUpload = (file: File) => {
-    setUploadedPhoto(file);
-    // In a real implementation, this would call Nano Banana API
-    setTimeout(() => {
+  const handlePhotoUpload = async (file: File) => {
+    // Validate file before upload
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+    if (file.size > MAX_SIZE) {
       toast({
-        title: "Virtual try-on ready",
-        description: "Select a product to see how it looks on you!",
+        title: "File too large",
+        description: "Image must be less than 10MB. Please choose a smaller file.",
+        variant: "destructive",
       });
-    }, 2000);
+      return;
+    }
+
+    if (!ALLOWED_TYPES.includes(file.type)) {
+      toast({
+        title: "Invalid file type",
+        description: "Only JPEG, PNG, and WebP images are allowed.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploadingPhoto(true);
+    setUploadedPhoto(file);
+    
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      // Add sessionId if available
+      if (sessionId) {
+        formData.append('sessionId', sessionId);
+      }
+
+      const response = await fetch(UPLOAD_IMAGE_ENDPOINT, {
+        method: 'POST',
+        body: formData,
+        // Don't set Content-Type - browser will set it automatically with boundary
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Upload failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('[Wearly] Image uploaded successfully:', data);
+
+      // Store imageId and url for later use with try-on
+      if (data.imageId) {
+        localStorage.setItem('userImageId', data.imageId);
+      }
+      if (data.url) {
+        localStorage.setItem('userImageUrl', data.url);
+      }
+
+      toast({
+        title: "✨ Photo uploaded",
+        description: "Your photo is ready for virtual try-on!",
+        className: "border-primary bg-primary/95 text-primary-foreground",
+      });
+    } catch (error) {
+      console.error('[Wearly] Failed to upload image:', error);
+      
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      toast({
+        title: "Upload failed",
+        description: errorMessage,
+        variant: "destructive",
+      });
+      
+      // Clear the uploaded photo on error
+      setUploadedPhoto(null);
+    } finally {
+      setIsUploadingPhoto(false);
+    }
   };
 
   const handleProductSelect = (product: Product) => {
@@ -235,6 +307,7 @@ const Index = () => {
                   onSearchRequest={handleSearchRequest}
                   onPhotoUpload={handlePhotoUpload}
                   uploadedPhoto={uploadedPhoto}
+                  isUploadingPhoto={isUploadingPhoto}
                 />
               </div>
             </ResizablePanel>

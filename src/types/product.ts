@@ -5,6 +5,7 @@ export interface Product {
   originalPrice?: number;
   discount?: number;
   image: string;
+  userProductImage?: string;
   source: string;
   color: string;
   size: string;

@@ -40,17 +40,17 @@ export const ProductDetailModal = ({
 
         <div className="p-6">
           {/* Comparison Grid */}
-          {photoUrl ? (
+          {product.userProductImage ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-              {/* User Photo */}
+              {/* Virtual Try-On */}
               <div className="space-y-3 animate-in fade-in slide-in-from-left-4 duration-500">
                 <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                  Tu foto
+                  Virtual Try-On
                 </h3>
                 <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border-2 border-border/80 shadow-card bg-gradient-subtle">
                   <img
-                    src={photoUrl}
-                    alt="Tu foto"
+                    src={product.userProductImage}
+                    alt="Virtual try-on"
                     className="object-cover w-full h-full"
                   />
                 </div>
@@ -59,7 +59,7 @@ export const ProductDetailModal = ({
               {/* Product Photo */}
               <div className="space-y-3 animate-in fade-in slide-in-from-right-4 duration-500 delay-100">
                 <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                  El producto
+                  Product
                 </h3>
                 <div className="relative aspect-[3/4] rounded-2xl overflow-hidden border-2 border-primary/20 shadow-card bg-gradient-subtle">
                   <img
@@ -70,7 +70,7 @@ export const ProductDetailModal = ({
                   {product.inStock === false && (
                     <div className="absolute inset-0 bg-background/90 flex items-center justify-center backdrop-blur-sm">
                       <Badge variant="secondary" className="font-medium">
-                        Agotado
+                        Out of Stock
                       </Badge>
                     </div>
                   )}
@@ -117,19 +117,19 @@ export const ProductDetailModal = ({
                 </Badge>
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Talla</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Size</p>
                 <Badge variant="outline" className="text-sm font-medium">
                   {product.size || "-"}
                 </Badge>
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Categoría</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Category</p>
                 <Badge variant="outline" className="text-sm font-medium">
                   {product.category || "-"}
                 </Badge>
               </div>
               <div className="space-y-1">
-                <p className="text-xs text-muted-foreground uppercase tracking-wide">Tienda</p>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">Store</p>
                 <Badge variant="outline" className="text-sm font-medium">
                   {product.source || "-"}
                 </Badge>
@@ -140,7 +140,7 @@ export const ProductDetailModal = ({
             {product.description && (
               <div className="space-y-2">
                 <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wide">
-                  Descripción
+                  Description
                 </h3>
                 <p className="text-sm text-foreground/80 leading-relaxed">
                   {product.description}
@@ -160,7 +160,7 @@ export const ProductDetailModal = ({
                 }}
               >
                 <ExternalLink className="h-5 w-5 mr-2" />
-                Ver en tienda
+                View in Store
               </Button>
               <Button
                 size="lg"
@@ -168,7 +168,7 @@ export const ProductDetailModal = ({
                 className="h-12 px-6 rounded-xl border-2"
                 onClick={onClose}
               >
-                Cerrar
+                Close
               </Button>
             </div>
           </div>
