@@ -1,14 +1,16 @@
 import { Card, CardContent } from "@/components/ui/card";
+
 import { Badge } from "@/components/ui/badge";
-import { Product } from "@/types/product";
 import { Button } from "./ui/button";
+import { Product } from "@/types/product";
 
 interface ProductCardProps {
   product: Product;
   onClick: () => void;
+  onTryOn?: () => void;
 }
 
-export const ProductCard = ({ product, onClick }: ProductCardProps) => {
+export const ProductCard = ({ product, onClick, onTryOn }: ProductCardProps) => {
   return (
     <Card 
       className="group cursor-pointer hover:shadow-medium transition-all duration-300 overflow-hidden border border-border/80 bg-card shadow-card"
@@ -77,13 +79,41 @@ export const ProductCard = ({ product, onClick }: ProductCardProps) => {
           )}
         </div>
         
-        <Button 
-          className="w-full mt-1 h-8 text-xs font-semibold rounded-full" 
-          size="sm"
-          disabled={product.inStock === false}
-        >
-          View Details
-        </Button>
+        {!product.userProductImage ? (
+          <div className="flex gap-2 mt-1">
+            <Button 
+              className="flex-1 h-8 text-xs font-semibold rounded-full" 
+              size="sm"
+              disabled={product.inStock === false}
+              onClick={(e) => {
+                e.stopPropagation();
+                onClick();
+              }}
+            >
+              View Details
+            </Button>
+            <Button 
+              className="flex-1 h-8 text-xs font-semibold rounded-full bg-background text-primary border border-primary hover:bg-primary/10" 
+              size="sm"
+              variant="outline"
+              disabled={product.inStock === false}
+              onClick={(e) => {
+                e.stopPropagation();
+                onTryOn?.();
+              }}
+            >
+              Try-On
+            </Button>
+          </div>
+        ) : (
+          <Button 
+            className="w-full mt-1 h-8 text-xs font-semibold rounded-full" 
+            size="sm"
+            disabled={product.inStock === false}
+          >
+            View Details
+          </Button>
+        )}
       </CardContent>
     </Card>
   );
