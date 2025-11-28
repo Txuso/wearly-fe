@@ -3,38 +3,79 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "./ui/button";
 import { Product } from "@/types/product";
+import { Loader2 } from "lucide-react";
 
 interface ProductCardProps {
   product: Product;
   onClick: () => void;
   onTryOn?: () => void;
+  isLoading?: boolean;
 }
 
-export const ProductCard = ({ product, onClick, onTryOn }: ProductCardProps) => {
+export const ProductCard = ({ product, onClick, onTryOn, isLoading = false }: ProductCardProps) => {
   return (
     <Card 
-      className="group cursor-pointer hover:shadow-medium transition-all duration-300 overflow-hidden border border-border/80 bg-card shadow-card"
+      className="group cursor-pointer hover:shadow-medium transition-all duration-300 overflow-hidden border border-border/80 bg-card shadow-card relative"
       onClick={onClick}
     >
-      <div className="relative overflow-hidden aspect-[3/4] bg-gradient-subtle">
-        <img
-          src={product.image}
-          alt={product.name}
-          className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
-        />
-        {product.discount && product.discount > 0 && (
-          <div className="absolute top-2 right-2">
-            <Badge className="bg-red-500 text-white font-bold text-xs px-2 py-1">
-              -{product.discount}%
-            </Badge>
+      {isLoading && (
+        <div className="absolute inset-0 bg-background/90 flex flex-col items-center justify-center backdrop-blur-sm z-10">
+          <Loader2 className="h-12 w-12 text-primary animate-spin mb-2" />
+          <p className="text-sm font-medium text-foreground">Processing try-on...</p>
+        </div>
+      )}
+      
+      {product.userProductImage ? (
+        // Comparison view with try-on image
+        <div className="grid grid-cols-2 gap-0">
+          <div className="relative aspect-[3/4] bg-gradient-subtle">
+            <img
+              src={product.userProductImage}
+              alt="Virtual try-on"
+              className="object-cover w-full h-full"
+            />
+            <div className="absolute bottom-2 left-2 right-2">
+              <span className="text-[10px] font-medium px-2 py-1 bg-background/90 backdrop-blur-sm rounded-full">
+                Virtual Try-On
+              </span>
+            </div>
           </div>
-        )}
-        {product.inStock === false && (
-          <div className="absolute inset-0 bg-background/90 flex items-center justify-center backdrop-blur-sm">
-            <Badge variant="secondary" className="font-medium">Out of Stock</Badge>
+          <div className="relative aspect-[3/4] bg-gradient-subtle">
+            <img
+              src={product.image}
+              alt={product.name}
+              className="object-cover w-full h-full"
+            />
+            <div className="absolute bottom-2 left-2 right-2">
+              <span className="text-[10px] font-medium px-2 py-1 bg-background/90 backdrop-blur-sm rounded-full">
+                Product
+              </span>
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        // Regular single image view
+        <div className="relative overflow-hidden aspect-[3/4] bg-gradient-subtle">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="object-cover w-full h-full group-hover:scale-105 transition-transform duration-500"
+          />
+          {product.discount && product.discount > 0 && (
+            <div className="absolute top-2 right-2">
+              <Badge className="bg-red-500 text-white font-bold text-xs px-2 py-1">
+                -{product.discount}%
+              </Badge>
+            </div>
+          )}
+          {product.inStock === false && (
+            <div className="absolute inset-0 bg-background/90 flex items-center justify-center backdrop-blur-sm">
+              <Badge variant="secondary" className="font-medium">Out of Stock</Badge>
+            </div>
+          )}
+        </div>
+      )}
+      
       <CardContent className="p-3.5 space-y-2.5">
         <div className="space-y-1.5">
           <div className="flex items-start justify-between gap-2">

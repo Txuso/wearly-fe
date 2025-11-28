@@ -43,6 +43,7 @@ interface ChatApiResponse {
 
 const CHAT_ENDPOINT = "http://localhost:3000/api/chat";
 const UPLOAD_IMAGE_ENDPOINT = "http://localhost:3000/api/upload-user-image";
+const TRY_ON_ENDPOINT = "http://localhost:3000/api/try-on/from-item";
 
 const Index = () => {
   const [products, setProducts] = useState<Product[]>([]);
@@ -52,6 +53,7 @@ const Index = () => {
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+  const [tryOnLoadingIds, setTryOnLoadingIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   useEffect(() => {
@@ -253,6 +255,73 @@ const Index = () => {
     setIsModalOpen(true);
   };
 
+  const handleTryOn = async (product: Product) => {
+    if (!sessionId) {
+      toast({
+        title: "Session not ready",
+        description: "Please wait for the session to be established.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Add product to loading set
+    setTryOnLoadingIds(prev => new Set(prev).add(product.id));
+
+    try {
+      const response = await fetch(TRY_ON_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          sessionId: sessionId,
+          itemImageUrl: product.image,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.message || `Try-on failed with status ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('[Wearly] Try-on successful:', data);
+
+      // Update the product with the try-on image
+      setProducts(prevProducts =>
+        prevProducts.map(p =>
+          p.id === product.id
+            ? { ...p, userProductImage: data.tryOnImageUrl }
+            : p
+        )
+      );
+
+      toast({
+        title: "✨ Try-on complete",
+        description: data.message || "Your virtual try-on is ready!",
+        className: "border-primary bg-primary/95 text-primary-foreground",
+      });
+    } catch (error) {
+      console.error('[Wearly] Try-on failed:', error);
+
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+      toast({
+        title: "Try-on failed",
+        description: errorMessage || "Could not process virtual try-on. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      // Remove product from loading set
+      setTryOnLoadingIds(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(product.id);
+        return newSet;
+      });
+    }
+  };
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -327,6 +396,8 @@ const Index = () => {
                   onProductSelect={handleProductSelect}
                   uploadedPhoto={uploadedPhoto}
                   isLoading={isLoading}
+                  onTryOn={handleTryOn}
+                  tryOnLoadingIds={tryOnLoadingIds}
                 />
               </div>
             </ResizablePanel>
