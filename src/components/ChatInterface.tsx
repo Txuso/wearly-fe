@@ -24,9 +24,10 @@ interface ChatInterfaceProps {
   onPhotoUpload: (file: File) => void;
   uploadedPhoto: File | null;
   isUploadingPhoto?: boolean;
+  assistantReply?: string;
 }
 
-export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto, isUploadingPhoto = false }: ChatInterfaceProps) => {
+export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto, isUploadingPhoto = false, assistantReply }: ChatInterfaceProps) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
@@ -49,6 +50,18 @@ export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto, i
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (assistantReply) {
+      const assistantMessage: Message = {
+        id: Date.now().toString() + '-assistant',
+        role: "assistant",
+        content: assistantReply,
+        timestamp: new Date(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+    }
+  }, [assistantReply]);
 
   useEffect(() => {
     if ('webkitSpeechRecognition' in window) {
@@ -95,18 +108,6 @@ export const ChatInterface = ({ onSearchRequest, onPhotoUpload, uploadedPhoto, i
 
     setMessages((prev) => [...prev, userMessage]);
     onSearchRequest(input);
-
-    // Simulate assistant response
-    setTimeout(() => {
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: `Searching for: "${input}". Let me find the best matches for you...`,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, assistantMessage]);
-    }, 500);
-
     setInput("");
   };
 

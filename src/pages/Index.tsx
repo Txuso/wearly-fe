@@ -54,6 +54,7 @@ const Index = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [tryOnLoadingIds, setTryOnLoadingIds] = useState<Set<string>>(new Set());
+  const [assistantReply, setAssistantReply] = useState<string>("");
   const { toast } = useToast();
 
   useEffect(() => {
@@ -116,6 +117,7 @@ const Index = () => {
       }
 
       const reply = data.response || `He recibido tu búsqueda para "${query}". Estoy preparando recomendaciones.`;
+      setAssistantReply(reply);
 
       const searchResults = Array.isArray(data.searchResults) ? data.searchResults : [];
       const normalizedProducts: Product[] = searchResults.map((item, index) => ({
@@ -131,6 +133,7 @@ const Index = () => {
         category: item.garmentType,
         inStock: true,
         description: item.description,
+        url: item.product_url,
       }));
 
       setProducts(normalizedProducts);
@@ -388,6 +391,7 @@ const Index = () => {
                   onPhotoUpload={handlePhotoUpload}
                   uploadedPhoto={uploadedPhoto}
                   isUploadingPhoto={isUploadingPhoto}
+                  assistantReply={assistantReply}
                 />
               </div>
             </ResizablePanel>
