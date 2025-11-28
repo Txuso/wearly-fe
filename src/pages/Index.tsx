@@ -1,18 +1,19 @@
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
+import { useEffect, useState } from "react";
+
+import { ApiError } from "@/services/api";
 import { ChatInterface } from "@/components/ChatInterface";
-import { Product } from "@/types/product";
-import { ProductGrid } from "@/components/ProductGrid";
-import { ProductDetailModal } from "@/components/ProductDetailModal";
 import { NavLink } from "@/components/NavLink";
+import { Product } from "@/types/product";
+import { ProductDetailModal } from "@/components/ProductDetailModal";
+import { ProductGrid } from "@/components/ProductGrid";
 import { ShoppingBag } from "lucide-react";
 import { generateMockProducts } from "@/utils/mockProducts";
-import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { ApiError } from "@/services/api";
-import {
-  ResizablePanelGroup,
-  ResizablePanel,
-  ResizableHandle,
-} from "@/components/ui/resizable";
 
 interface BackendProduct {
   title: string;
@@ -263,11 +264,15 @@ const Index = () => {
       />
       {/* Header */}
       <header className="border-b border-border/60 bg-card/80 backdrop-blur-md sticky top-0 z-10 shadow-soft">
-        <div className="container mx-auto px-4 py-4">
+        <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2.5 bg-gradient-hero rounded-xl shadow-card">
-                <ShoppingBag className="h-6 w-6 text-primary-foreground" />
+              <div className="flex items-center justify-center h-10">
+                <img 
+                  src="/wearly-logo.png" 
+                  alt="Wearly Logo" 
+                  className="h-16 w-16 object-contain"
+                />
               </div>
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-hero bg-clip-text tracking-tight">
